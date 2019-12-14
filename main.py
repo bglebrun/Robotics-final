@@ -39,7 +39,7 @@ while VIDEO_CAPTURE.isOpened():
 
     CANNY_EDGE = cv2.Canny(BLUR, LOW_THRESH, HIGH_THRESH)
 
-    LINES = cv2.HoughLines(CANNY_EDGE, 1, np.pi/180, 200)
+    LINES = cv2.HoughLinesP(CANNY_EDGE, 1, np.pi/180, 200)
 
     hough_calc = np.copy(FRAME) * 0
 
