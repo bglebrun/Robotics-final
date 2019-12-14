@@ -20,8 +20,7 @@ def EXTRACT_KEYFRAME(FRAME, LOWER_THRESH=175, inverted=False):
 
     return BLUR
 
-def CONTROLLER(LHS, RHS):
-    DEADZONE = 6000
+def CONTROLLER(LHS, RHS, DEADZONE = 6000):
     pos = RHS - LHS
     # TODO Update comments
     #if the pos is positive we are too far right, turn left
