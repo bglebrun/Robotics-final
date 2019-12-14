@@ -39,9 +39,15 @@ while VIDEO_CAPTURE.isOpened():
 
     CANNY_EDGE = cv2.Canny(BLUR, LOW_THRESH, HIGH_THRESH)
 
-    LINES = cv2.HoughLinesP(CANNY_EDGE, 1, np.pi/180, 100)
+    LINES = cv2.HoughLines(CANNY_EDGE, 1, np.pi/180, 200)
 
-    FINAL = cv2.addWeighted(FRAME, 1.0, LINES, 0.5, 1.0)
+    hough_calc = np.copy(FRAME) * 0
+
+    for line in LINES:
+        for x1, y1, x2, y2 in line:
+            cv2.line(hough_calc, (x1, y1), (x2, y2), (255, 0, 0), 10)
+
+    FINAL = cv2.addWeighted(FRAME, 0.8, hough_calc, 1, 0)
 
     # Display the resulting processed frame
     cv2.imshow('FRAME', FINAL)
