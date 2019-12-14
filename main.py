@@ -6,9 +6,10 @@ import numpy as np
 import cv2
 
 def EXTRACT_KEYFRAME(FRAME):
-    LOWER_THRESH = 150
+    LOWER_THRESH = 175
     UPPER_THRESH = 255
-    RET, BINARY = cv2.threshold(FRAME, LOWER_THRESH, UPPER_THRESH, cv2.THRESH_BINARY_INV)
+    GREY = cv2.cvtColor(FRAME, cv2.COLOR_BGR2GRAY)
+    RET, BINARY = cv2.threshold(GREY, LOWER_THRESH, UPPER_THRESH, cv2.THRESH_BINARY)
     # EDGES = cv2.Canny(BINARY, 100, 200)
 
     # Gaussian blur for filtering
@@ -17,17 +18,19 @@ def EXTRACT_KEYFRAME(FRAME):
     return BINARY
 
 def CONTROLLER(LHS, RHS):
+    DEADZONE = 6000
     pos = RHS - LHS
+    # TODO Update comments
     #if the pos is positive we are too far right, turn left
-    if( pos > 0 ):
+    if pos < -1*DEADZONE:
         print("turn left")
 
     #if the pos is negative we are too far left, turn right
-    if( pos < 0 ):
+    elif pos > DEADZONE :
         print("turn right")
 
     #if pos == 0 we are dead center drive straight
-    if( pos == 0 ):
+    else:
         print("go straight")
 
     return
@@ -48,9 +51,11 @@ while VIDEO_CAPTURE.isOpened():
     # Logitech camera actual resolution: 960 x 544, 0 starts at top left
     ROI = FRAME[144:544, 0:960]
 
+    PROCESSED = EXTRACT_KEYFRAME(FRAME)
+
     # Split frame into left and right
-    FRAME_RIGHT = FRAME[144:544, 480:960]
-    FRAME_LEFT = FRAME[144:544, 0:480]
+    FRAME_RIGHT = PROCESSED[144:544, 480:960]
+    FRAME_LEFT = PROCESSED[144:544, 0:480]
 
     whiteLHS = np.sum(FRAME_LEFT == 255)
     print('Number of white pixels LHS:', whiteLHS)
@@ -62,7 +67,7 @@ while VIDEO_CAPTURE.isOpened():
     CONTROLLER(whiteLHS, whiteRHS)
 
     # Display the resulting processed frame
-    cv2.imshow('FRAME', ROI)
+    cv2.imshow('FRAME', PROCESSED)
     if cv2.waitKey(1) & 0xFF == ord('q'):
         break
 
