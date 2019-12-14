@@ -1,49 +1,33 @@
 #!/usr/bin/env python
+import numpy as np
 import cv2
 
-VIDEO_CAPTURE = cv2.VideoCapture(-1)
-VIDEO_CAPTURE.set(3, 160)
-VIDEO_CAPTURE.set(4, 120)
+VIDEO_CAPTURE = cv2.VideoCapture(0)
 
-while True:
+while VIDEO_CAPTURE.isOpened():
 
     RET, FRAME = VIDEO_CAPTURE.read()
 
-    # FRAME = FRAME[60:120, 0:160]
+    GRAY_IMG = cv2.cvtColor(FRAME, cv2.COLOR_BGR2GRAY)
+    INV_GRAY = cv2.bitwise_not(GRAY_IMG)
 
-    GRAY = cv2.cvtColor(FRAME, cv2.COLOR_BGR2GRAY)
+    HSV = cv2.cvtColor(FRAME, cv2.COLOR_BGR2HSV)
 
-    # blur = cv2.GaussianBlur(GRAY,(5,5),0)
+    LOWER_YELLOW = np.array([20, 100, 100], dtype = "uint8")
+    UPPER_YELLOW = np.array([30, 255, 255], dtype = "uint8")
 
-    RET, THRESH = cv2.threshold(GRAY, 60, 255, cv2.THRESH_BINARY_INV)
+    MASK_YELLOW = cv2.inRange(HSV, LOWER_YELLOW, UPPER_YELLOW)
+    MASK_WHITE = cv2.inRange(INV_GRAY, 200, 255)
+    MASK_YW = cv2.bitwise_or(MASK_WHITE, MASK_YELLOW)
+    MASK_YW_IMAGE = cv2.bitwise_and(INV_GRAY, MASK_YW)
 
-    CONTOURS, HIERARCHY = cv2.findContours(THRESH.copy(), 1, cv2.CHAIN_APPROX_NONE)
-
-    if len(CONTOURS) > 0:
-        C = max(CONTOURS, key=cv2.contourArea)
-        M = cv2.moments(C)
-
-        C_X = int(M['m10']/M['m00'])
-        C_Y = int(M['m01']/M['m00'])
-
-        cv2.line(FRAME, (C_X, 0), (C_X, 720), (200, 0, 0), 1)
-        cv2.line(FRAME, (0, C_Y), (1280, C_Y), (255, 0, 0), 1)
-
-        cv2.drawContours(FRAME, CONTOURS, -1, (0, 255, 0), 1)
-
-        if C_X >= 120:
-            print("Turn Left!")
-
-        if C_X < 120 and C_X > 50:
-            print("On Track!")
-
-        if C_X <= 50:
-            print("Turn Right")
-
-    else:
-        print("I don't see the line")
+    BLUR_SEED = 5
+    BLUR = cv2.GaussianBlur(MASK_YW_IMAGE, (5, 5) , 0)
 
     #Display the resulting FRAME
-    cv2.imshow('FRAME', FRAME)
+    cv2.imshow('FRAME', BLUR)
     if cv2.waitKey(1) & 0xFF == ord('q'):
         break
+
+VIDEO_CAPTURE.release()
+cv2.destroyAllWindows()
