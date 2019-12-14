@@ -5,11 +5,14 @@ returns a simplified lane detection algorithm"""
 import numpy as np
 import cv2
 
-def EXTRACT_KEYFRAME(FRAME):
-    LOWER_THRESH = 175
+def EXTRACT_KEYFRAME(FRAME, LOWER_THRESH=175, inverted=False):
     UPPER_THRESH = 255
+    if inverted:
+        TYPE = cv2.THRESH_BINARY_INV
+    else:
+        TYPE = cv2.THRESH_BINARY
     GREY = cv2.cvtColor(FRAME, cv2.COLOR_BGR2GRAY)
-    RET, BINARY = cv2.threshold(GREY, LOWER_THRESH, UPPER_THRESH, cv2.THRESH_BINARY)
+    RET, BINARY = cv2.threshold(GREY, LOWER_THRESH, UPPER_THRESH, TYPE)
     # EDGES = cv2.Canny(BINARY, 100, 200)
 
     # Gaussian blur for filtering
