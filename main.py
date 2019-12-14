@@ -13,9 +13,9 @@ def EXTRACT_KEYFRAME(FRAME):
     # EDGES = cv2.Canny(BINARY, 100, 200)
 
     # Gaussian blur for filtering
-    # BLUR = cv2.GaussianBlur(BINARY, (5, 5), 0)
+    BLUR = cv2.GaussianBlur(BINARY, (5, 5), 0)
 
-    return BINARY
+    return BLUR
 
 def CONTROLLER(LHS, RHS):
     DEADZONE = 6000
