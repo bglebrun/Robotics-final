@@ -95,7 +95,7 @@ while VIDEO_CAPTURE.isOpened():
 
     controller(LHS_WHITE, RHS_WHITE, _DEADZONE)
 
-    _THRESHOLD = cv2.getTrackbarPos('threshold','FRAME')
+    _THRESHOLD = cv2.getTrackbarPos('threshold', 'FRAME')
     _DEADZONE = cv2.getTrackbarPos('deadzone', 'FRAME')
     _INV = cv2.getTrackbarPos(SWITCH, 'FRAME')
 
