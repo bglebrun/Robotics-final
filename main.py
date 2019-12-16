@@ -4,12 +4,71 @@ returns a simplified lane detection algorithm"""
 
 import numpy as np
 import cv2
+import atomicpi
+import gpio as GPIO
+
+# Control by signal ID
+GPIO_0=atomicpi.signals.ISH_GPIO_0.global_idx # Enable A
+GPIO.setup(GPIO_0, GPIO.OUT)
+GPIO_1=atomicpi.signals.ISH_GPIO_1.global_idx # Enable B
+GPIO.setup(GPIO_1, GPIO.OUT)
+GPIO_2=atomicpi.signals.ISH_GPIO_2.global_idx # INPUT 1
+GPIO.setup(GPIO_2, GPIO.OUT)
+GPIO_3=atomicpi.signals.ISH_GPIO_3.global_idx # INPUT 2
+GPIO.setup(GPIO_3, GPIO.OUT)
+GPIO_4=atomicpi.signals.ISH_GPIO_4.global_idx # INPUT 3
+GPIO.setup(GPIO_4, GPIO.OUT)
+GPIO_7=atomicpi.signals.ISH_GPIO_7.global_idx # INPUT 4
+GPIO.setup(GPIO_7, GPIO.OUT)
+
+INPUT_1=GPIO_2
+INPUT_2=GPIO_3
+INPUT_3=GPIO_4
+INPUT_4=GPIO_7
+ENABLE_A=GPIO_0
+ENABLE_B=GPIO_1
 
 # Some "Constants"
 _THRESHOLD = 0
 _DEADZONE = 0
 _INV = False
 SWITCH = '0 : NORM \n1 : INV'
+
+# Right Side
+def motor_A_fwd(on=True):
+    # print("Right fwd: ", on)
+    if on:
+        GPIO.output(INPUT_1, False)
+        GPIO.output(INPUT_2, True)
+    else:
+        GPIO.output(INPUT_1, True)
+        GPIO.output(INPUT_2, False)
+
+# Left Side
+def motor_B_fwd(on=True):
+    # print("Left fwd: ", on)
+    if on:
+        GPIO.output(INPUT_3, False)
+        GPIO.output(INPUT_4, True)
+    else:
+        GPIO.output(INPUT_3, True)
+        GPIO.output(INPUT_4, False)
+
+# Right Side
+def motor_A_on(on=True):
+    # print("Right on: ", on)
+    if on:
+        GPIO.output(ENABLE_A, True)
+    else:
+        GPIO.output(ENABLE_A, False)
+
+# Left Side
+def motor_B_on(on=True):
+    # print("Left on: ", on)
+    if on:
+        GPIO.output(ENABLE_B, True)
+    else:
+        GPIO.output(ENABLE_B, False)
 
 def change_deadzone(pos):
     """ deadzone slider callback"""
@@ -42,24 +101,42 @@ def extract_keyframe(image, lower_thresh=175, inverted=False):
 
     return blur
 
+def turn_left():
+    print("Turn left")
+    motor_B_on(True)
+    motor_A_on(False)
+
+def turn_right():
+    print("Turn right")
+    motor_A_on(False)
+    motor_B_on(True)
+
+def straight():
+    print("Turn straight")
+    motor_A_on(True)
+    motor_B_on(True)
+
 def controller(lhs, rhs, deadzone_val=6000):
     """Processes correct turn direction based on white values"""
     pos = rhs - lhs
+    print("pos: ", pos)
 
     #if the pos is positive we are too far right, turn left
     if pos < -1*deadzone_val:
-        print("turn left")
+        turn_right()
 
     #if the pos is negative we are too far left, turn right
     elif pos > deadzone_val:
-        print("turn right")
+        turn_left()
 
     #if pos == 0 we are dead center drive straight
     else:
-        print("go straight")
+        straight()
 
 # Initialize video capture
 VIDEO_CAPTURE = cv2.VideoCapture(0)
+VIDEO_CAPTURE.set(3, 800)
+VIDEO_CAPTURE.set(4, 600)
 
 cv2.namedWindow('FRAME')
 
@@ -67,6 +144,9 @@ cv2.namedWindow('FRAME')
 cv2.createTrackbar('threshold', 'FRAME', 175, 255, change_threshold)
 cv2.createTrackbar(SWITCH, 'FRAME', 0, 1, flip_thresh_type)
 cv2.createTrackbar('deadzone', 'FRAME', 6000, 100000, change_deadzone)
+
+motor_A_fwd()
+motor_B_fwd()
 
 # While video capture is running
 while VIDEO_CAPTURE.isOpened():
@@ -78,13 +158,17 @@ while VIDEO_CAPTURE.isOpened():
         break
 
     # Logitech camera actual resolution: 960 x 544, 0 starts at top left
-    ROI = FRAME[144:544, 0:960]
+    # Scaled to 800*600
+    # ROI = FRAME[272:544, 0:960]
+    ROI = FRAME[300:600, 0:800]
 
     PROCESSED = extract_keyframe(FRAME, _THRESHOLD, _INV)
 
     # Split frame into left and right
-    FRAME_RIGHT = PROCESSED[144:544, 480:960]
-    FRAME_LEFT = PROCESSED[144:544, 0:480]
+    # FRAME_RIGHT = PROCESSED[272:544, 480:960]
+    # FRAME_LEFT = PROCESSED[272:544, 0:480]
+    FRAME_RIGHT = PROCESSED[300:600, 400:800]
+    FRAME_LEFT = PROCESSED[300:600, 0:400]
 
     LHS_WHITE = np.sum(FRAME_LEFT == 255)
     print('Number of white pixels LHS:', LHS_WHITE)
