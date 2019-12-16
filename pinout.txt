@@ -1,0 +1,7 @@
+Enable A - GPIO 0
+Enable B - GPIO 1
+
+Input 1 - GPIO 2
+Input 2 - GPIO 3
+Input 3 - GPIO 4
+Input 4 - GPIO 7
