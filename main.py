@@ -5,6 +5,27 @@ returns a simplified lane detection algorithm"""
 import numpy as np
 import cv2
 
+# Some "Constants"
+_THRESHOLD = 0
+_DEADZONE = 0
+_INV = False
+SWITCH = '0 : NORM \n1 : INV'
+
+def change_deadzone(pos):
+    """ deadzone slider callback"""
+    _DEADZONE = pos
+
+def flip_thresh_type(pos):
+    """ thresh type callback"""
+    if pos == 0:
+        _INV = False
+    else:
+        _INV = True
+
+def change_threshold(pos):
+    """threshold slider callback"""
+    _THRESHOLD = pos
+
 def extract_keyframe(image, lower_thresh=175, inverted=False):
     """Processes and returns frames for white space counting"""
     upper_thresh = 255
@@ -40,16 +61,12 @@ def controller(lhs, rhs, deadzone_val=6000):
 # Initialize video capture
 VIDEO_CAPTURE = cv2.VideoCapture(0)
 
-SWITCH = '0 : NORM \n1 : INV'
-INV = False
+cv2.namedWindow('FRAME')
 
 # Create trackbars for value editing
-cv2.createTrackbar('threshold', 'FRAME', 175, 255)
-cv2.createTrackbar(SWITCH, 'FRAME', 0, 1)
-cv2.createTrackbar('deadzone', 'FRAME', 6000, 100000)
-
-THRESHOLD = 0
-DEADZONE = 0
+cv2.createTrackbar('threshold', 'FRAME', 175, 255, change_threshold)
+cv2.createTrackbar(SWITCH, 'FRAME', 0, 1, flip_thresh_type)
+cv2.createTrackbar('deadzone', 'FRAME', 6000, 100000, change_deadzone)
 
 # While video capture is running
 while VIDEO_CAPTURE.isOpened():
@@ -63,7 +80,7 @@ while VIDEO_CAPTURE.isOpened():
     # Logitech camera actual resolution: 960 x 544, 0 starts at top left
     ROI = FRAME[144:544, 0:960]
 
-    PROCESSED = extract_keyframe(FRAME, THRESHOLD, INV)
+    PROCESSED = extract_keyframe(FRAME, _THRESHOLD, _INV)
 
     # Split frame into left and right
     FRAME_RIGHT = PROCESSED[144:544, 480:960]
@@ -76,17 +93,11 @@ while VIDEO_CAPTURE.isOpened():
 
     print("Number of white pixles RHS: ", RHS_WHITE)
 
-    controller(LHS_WHITE, RHS_WHITE, DEADZONE)
+    controller(LHS_WHITE, RHS_WHITE, _DEADZONE)
 
-    THRESHOLD = cv2.getTrackbarPos('threshold', 'FRAME')
-    S_VAL = cv2.getTrackbarPos(SWITCH, 'FRAME')
-    DEADZONE = cv2.getTrackbarPos('deadzone', 'FRAME')
-
-    if S_VAL == 0:
-        INV = False
-    else:
-        INV = True
-
+    _THRESHOLD = cv2.getTrackbarPos('threshold','FRAME')
+    _DEADZONE = cv2.getTrackbarPos('deadzone', 'FRAME')
+    _INV = cv2.getTrackbarPos(SWITCH, 'FRAME')
 
     # Display the resulting processed frame
     cv2.imshow('FRAME', PROCESSED)
