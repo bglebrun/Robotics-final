@@ -114,14 +114,14 @@ def extract_keyframe(image, lower_thresh=175, inverted=False):
 def turn_left():
     """ Turns robot left """
     print("Turn left")
-    motor_b_on(True)
-    motor_a_on(False)
+    motor_b_on(False)
+    motor_a_on(True)
 
 def turn_right():
     """ Turns robot right """
     print("Turn right")
-    motor_a_on(False)
     motor_b_on(True)
+    motor_a_on(False)
 
 def straight():
     """ Robot goes straight """
