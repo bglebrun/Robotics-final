@@ -32,12 +32,13 @@ ENABLE_B=GPIO_1
 _THRESHOLD = 0
 _DEADZONE = 0
 _INV = False
+_ROI = 0
 SWITCH = '0 : NORM \n1 : INV'
 
 # Right Side
-def motor_A_fwd(on=True):
-    # print("Right fwd: ", on)
-    if on:
+def motor_a_fwd(motor_fwd=True):
+    """ Turns on rights side forward """
+    if motor_fwd:
         GPIO.output(INPUT_1, False)
         GPIO.output(INPUT_2, True)
     else:
@@ -45,9 +46,9 @@ def motor_A_fwd(on=True):
         GPIO.output(INPUT_2, False)
 
 # Left Side
-def motor_B_fwd(on=True):
-    # print("Left fwd: ", on)
-    if on:
+def motor_b_fwd(motor_fwd=True):
+    """ Turns on left side forward """
+    if motor_fwd:
         GPIO.output(INPUT_3, False)
         GPIO.output(INPUT_4, True)
     else:
@@ -55,27 +56,29 @@ def motor_B_fwd(on=True):
         GPIO.output(INPUT_4, False)
 
 # Right Side
-def motor_A_on(on=True):
-    # print("Right on: ", on)
-    if on:
+def motor_a_on(motor_on=True):
+    """ Turns on right side motors """
+    if motor_on:
         GPIO.output(ENABLE_A, True)
     else:
         GPIO.output(ENABLE_A, False)
 
 # Left Side
-def motor_B_on(on=True):
-    # print("Left on: ", on)
-    if on:
+def motor_b_on(motor_on=True):
+    """ Turns on left side motors """
+    if motor_on:
         GPIO.output(ENABLE_B, True)
     else:
         GPIO.output(ENABLE_B, False)
 
 def change_deadzone(pos):
+    global _DEADZONE
     """ deadzone slider callback"""
     _DEADZONE = pos
 
 def flip_thresh_type(pos):
     """ thresh type callback"""
+    global _INV
     if pos == 0:
         _INV = False
     else:
@@ -83,7 +86,13 @@ def flip_thresh_type(pos):
 
 def change_threshold(pos):
     """threshold slider callback"""
+    global _THRESHOLD
     _THRESHOLD = pos
+
+def change_roi(pos):
+    """roi slider callback"""
+    global _ROI
+    _ROI = pos
 
 def extract_keyframe(image, lower_thresh=175, inverted=False):
     """Processes and returns frames for white space counting"""
@@ -102,19 +111,22 @@ def extract_keyframe(image, lower_thresh=175, inverted=False):
     return blur
 
 def turn_left():
+    """ Turns robot left """
     print("Turn left")
-    motor_B_on(True)
-    motor_A_on(False)
+    motor_b_on(True)
+    motor_a_on(False)
 
 def turn_right():
+    """ Turns robot right """
     print("Turn right")
-    motor_A_on(False)
-    motor_B_on(True)
+    motor_a_on(False)
+    motor_b_on(True)
 
 def straight():
+    """ Robot goes straight """
     print("Turn straight")
-    motor_A_on(True)
-    motor_B_on(True)
+    motor_a_on(True)
+    motor_b_on(True)
 
 def controller(lhs, rhs, deadzone_val=6000):
     """Processes correct turn direction based on white values"""
@@ -143,10 +155,11 @@ cv2.namedWindow('FRAME')
 # Create trackbars for value editing
 cv2.createTrackbar('threshold', 'FRAME', 175, 255, change_threshold)
 cv2.createTrackbar(SWITCH, 'FRAME', 0, 1, flip_thresh_type)
+cv2.createTrackbar('ROI', 'FRAME', 0, 450, change_roi)
 cv2.createTrackbar('deadzone', 'FRAME', 6000, 100000, change_deadzone)
 
-motor_A_fwd()
-motor_B_fwd()
+motor_a_fwd()
+motor_b_fwd()
 
 # While video capture is running
 while VIDEO_CAPTURE.isOpened():
@@ -159,16 +172,20 @@ while VIDEO_CAPTURE.isOpened():
 
     # Logitech camera actual resolution: 960 x 544, 0 starts at top left
     # Scaled to 800*600
-    # ROI = FRAME[272:544, 0:960]
-    ROI = FRAME[300:600, 0:800]
 
     PROCESSED = extract_keyframe(FRAME, _THRESHOLD, _INV)
+
+    # Draw debug lines
+    # X split line
+    cv2.line(PROCESSED, (400, 0), (400, 800), (255, 0, 0), 1)
+    # Y ROI line
+    cv2.line(PROCESSED, (0, _ROI), (800, _ROI), (255, 0, 0), 1)
 
     # Split frame into left and right
     # FRAME_RIGHT = PROCESSED[272:544, 480:960]
     # FRAME_LEFT = PROCESSED[272:544, 0:480]
-    FRAME_RIGHT = PROCESSED[300:600, 400:800]
-    FRAME_LEFT = PROCESSED[300:600, 0:400]
+    FRAME_RIGHT = PROCESSED[_ROI:600, 400:800]
+    FRAME_LEFT = PROCESSED[_ROI:600, 0:400]
 
     LHS_WHITE = np.sum(FRAME_LEFT == 255)
     print('Number of white pixels LHS:', LHS_WHITE)
@@ -179,6 +196,8 @@ while VIDEO_CAPTURE.isOpened():
 
     controller(LHS_WHITE, RHS_WHITE, _DEADZONE)
 
+    #TODO Using globals, should be able to remove these
+    _ROI = cv2.getTrackbarPos('ROI', 'FRAME')
     _THRESHOLD = cv2.getTrackbarPos('threshold', 'FRAME')
     _DEADZONE = cv2.getTrackbarPos('deadzone', 'FRAME')
     _INV = cv2.getTrackbarPos(SWITCH, 'FRAME')
