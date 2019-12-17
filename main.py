@@ -10,7 +10,6 @@ import spotipy
 import spotipy.util as util
 import yaml
 
-DER_FONKYBEATZ = True
 
 # Initializing our GPIO pins for the atomic pi H bridge controller
 # Control by signal ID
@@ -157,6 +156,7 @@ CLIENT_SECRET = ''
 MR_ROBOTO = ["spotify:track:7C0rG4oWO7VeZcffyW1sK9", "spotify:track:5fpizYGbi5IQoEraj6FP0R", "spotify:track:439TlnnznSiBbQbgXiBqAd", "spotify:track:7h2yhVxcZOGyQdOwD4Hu8J"]
 SCOPE = 'user-modify-playback-state'
 USERNAME = ''
+DER_FONKYBEATZ = False
 
 if DER_FONKYBEATZ:
     with open(r'./spotify.yaml') as file:
@@ -164,6 +164,7 @@ if DER_FONKYBEATZ:
         CLIENT_ID = CREDENTIALS_LIST['CLIENT_ID']
         CLIENT_SECRET = CREDENTIALS_LIST['CLIENT_SECRET']
         USERNAME = CREDENTIALS_LIST['USERNAME']
+        DER_FONKYBEATZ = CREDENTIALS_LIST['DER_FONKYBEATZ']
 
     TOKEN = util.prompt_for_user_token(USERNAME, SCOPE, client_id=CLIENT_ID, client_secret=CLIENT_SECRET, redirect_uri="http://localhost:8888/callback")
     if TOKEN:
