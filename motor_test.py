@@ -65,7 +65,11 @@ def motor_B_on(on=True):
     else:
         GPIO.output(ENABLE_B, False)
 
+# Enable B off
 motor_B_on(False)
+# Input 3 on, 4 off
 motor_B_fwd(False)
+# Input 1 on, 2 off
 motor_A_fwd(True)
+# Enable A on
 motor_A_on(True)
