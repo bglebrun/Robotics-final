@@ -175,12 +175,6 @@ while VIDEO_CAPTURE.isOpened():
 
     PROCESSED = extract_keyframe(FRAME, _THRESHOLD, _INV)
 
-    # Draw debug lines
-    # X split line
-    cv2.line(PROCESSED, (400, 0), (400, 800), (255, 0, 0), 1)
-    # Y ROI line
-    cv2.line(PROCESSED, (0, _ROI), (800, _ROI), (255, 0, 0), 1)
-
     # Split frame into left and right
     # FRAME_RIGHT = PROCESSED[272:544, 480:960]
     # FRAME_LEFT = PROCESSED[272:544, 0:480]
@@ -196,11 +190,11 @@ while VIDEO_CAPTURE.isOpened():
 
     controller(LHS_WHITE, RHS_WHITE, _DEADZONE)
 
-    #TODO Using globals, should be able to remove these
-    _ROI = cv2.getTrackbarPos('ROI', 'FRAME')
-    _THRESHOLD = cv2.getTrackbarPos('threshold', 'FRAME')
-    _DEADZONE = cv2.getTrackbarPos('deadzone', 'FRAME')
-    _INV = cv2.getTrackbarPos(SWITCH, 'FRAME')
+    # Draw debug lines
+    # X split line
+    cv2.line(PROCESSED, (400, 0), (400, 800), (0, 255, 0), 1)
+    # Y ROI line
+    cv2.line(PROCESSED, (0, _ROI), (800, _ROI), (0, 255, 0), 1)
 
     # Display the resulting processed frame
     cv2.imshow('FRAME', PROCESSED)
