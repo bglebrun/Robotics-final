@@ -77,6 +77,7 @@ def motor_b_on(motor_on=True):
         GPIO.output(ENABLE_B, False)
 
 def change_deadzone(pos):
+    # ok mr linter but Prof. Hinker said globals are ok in GUI applications
     global _DEADZONE
     """ deadzone slider callback"""
     _DEADZONE = pos
@@ -153,7 +154,7 @@ def controller(lhs, rhs, deadzone_val=6000):
 # Initialize the funk
 CLIENT_ID = ''
 CLIENT_SECRET = ''
-MR_ROBOTO = ["spotify:track:7C0rG4oWO7VeZcffyW1sK9", "spotify:track:5fpizYGbi5IQoEraj6FP0R", "spotify:track:439TlnnznSiBbQbgXiBqAd", "spotify:track:7h2yhVxcZOGyQdOwD4Hu8J"]
+MR_ROBOTO_PLAYLIST = 'spotify:playlist:02Dq7LiPv7Ut0QPblJtS3v'
 SCOPE = 'user-modify-playback-state'
 USERNAME = ''
 DER_FONKYBEATZ = False
@@ -169,7 +170,7 @@ if DER_FONKYBEATZ:
     TOKEN = util.prompt_for_user_token(USERNAME, SCOPE, client_id=CLIENT_ID, client_secret=CLIENT_SECRET, redirect_uri="http://localhost:8888/callback")
     if TOKEN:
         SP = spotipy.Spotify(auth=TOKEN)
-        SP.start_playback(uris=MR_ROBOTO)
+        SP.start_playback(context_uri=MR_ROBOTO_PLAYLIST)
     else:
         print("Can't get token for", USERNAME)
 
