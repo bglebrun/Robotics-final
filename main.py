@@ -190,14 +190,16 @@ while VIDEO_CAPTURE.isOpened():
 
     controller(LHS_WHITE, RHS_WHITE, _DEADZONE)
 
+    COLOR_DBG = cv2.cvtColor(PROCESSED, cv2.COLOR_GRAY2BGR)
+
     # Draw debug lines
     # X split line
-    cv2.line(PROCESSED, (400, 0), (400, 800), (0, 255, 0), 1)
+    cv2.line(COLOR_DBG, (400, 0), (400, 800), (0, 255, 0), 1)
     # Y ROI line
-    cv2.line(PROCESSED, (0, _ROI), (800, _ROI), (0, 255, 0), 1)
+    cv2.line(COLOR_DBG, (0, _ROI), (800, _ROI), (0, 255, 0), 1)
 
     # Display the resulting processed frame
-    cv2.imshow('FRAME', PROCESSED)
+    cv2.imshow('FRAME', COLOR_DBG)
     if cv2.waitKey(1) & 0xFF == ord('q'):
         break
 
