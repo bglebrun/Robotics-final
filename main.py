@@ -3,6 +3,7 @@
 returns a simplified lane detection algorithm"""
 
 import numpy as np
+import os
 import cv2
 import atomicpi
 import gpio as GPIO
@@ -159,7 +160,7 @@ SCOPE = 'user-modify-playback-state'
 USERNAME = ''
 DER_FONKYBEATZ = False
 
-if DER_FONKYBEATZ:
+if os.path.isfile('./spotify.yaml'):
     with open(r'./spotify.yaml') as file:
         CREDENTIALS_LIST = yaml.load(file, Loader=yaml.FullLoader)
         CLIENT_ID = CREDENTIALS_LIST['CLIENT_ID']
@@ -167,8 +168,9 @@ if DER_FONKYBEATZ:
         USERNAME = CREDENTIALS_LIST['USERNAME']
         DER_FONKYBEATZ = CREDENTIALS_LIST['DER_FONKYBEATZ']
 
-    TOKEN = util.prompt_for_user_token(USERNAME, SCOPE, client_id=CLIENT_ID, client_secret=CLIENT_SECRET, redirect_uri="http://localhost:8888/callback")
-    if TOKEN:
+    if DER_FONKYBEATZ:
+        TOKEN = util.prompt_for_user_token(USERNAME, SCOPE, client_id=CLIENT_ID, client_secret=CLIENT_SECRET, redirect_uri="http://localhost:8888/callback")
+    if DER_FONKYBEATZ and TOKEN:
         SP = spotipy.Spotify(auth=TOKEN)
         SP.start_playback(context_uri=MR_ROBOTO_PLAYLIST)
     else:
