@@ -40,11 +40,11 @@ SWITCH = '0 : NORM \n1 : INV'
 def motor_a_fwd(motor_fwd=True):
     """ Turns on rights side forward """
     if motor_fwd:
-        GPIO.output(INPUT_1, False)
-        GPIO.output(INPUT_2, True)
-    else:
         GPIO.output(INPUT_1, True)
         GPIO.output(INPUT_2, False)
+    else:
+        GPIO.output(INPUT_1, False)
+        GPIO.output(INPUT_2, True)
 
 # Left Side
 def motor_b_fwd(motor_fwd=True):
