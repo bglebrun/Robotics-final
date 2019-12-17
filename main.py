@@ -7,26 +7,27 @@ import cv2
 import atomicpi
 import gpio as GPIO
 
+# Initializing our GPIO pins for the atomic pi H bridge controller
 # Control by signal ID
-GPIO_0=atomicpi.signals.ISH_GPIO_0.global_idx # Enable A
+GPIO_0 = atomicpi.signals.ISH_GPIO_0.global_idx # Enable A
 GPIO.setup(GPIO_0, GPIO.OUT)
-GPIO_1=atomicpi.signals.ISH_GPIO_1.global_idx # Enable B
+GPIO_1 = atomicpi.signals.ISH_GPIO_1.global_idx # Enable B
 GPIO.setup(GPIO_1, GPIO.OUT)
-GPIO_2=atomicpi.signals.ISH_GPIO_2.global_idx # INPUT 1
+GPIO_2 = atomicpi.signals.ISH_GPIO_2.global_idx # INPUT 1
 GPIO.setup(GPIO_2, GPIO.OUT)
-GPIO_3=atomicpi.signals.ISH_GPIO_3.global_idx # INPUT 2
+GPIO_3 = atomicpi.signals.ISH_GPIO_3.global_idx # INPUT 2
 GPIO.setup(GPIO_3, GPIO.OUT)
-GPIO_4=atomicpi.signals.ISH_GPIO_4.global_idx # INPUT 3
+GPIO_4 = atomicpi.signals.ISH_GPIO_4.global_idx # INPUT 3
 GPIO.setup(GPIO_4, GPIO.OUT)
-GPIO_7=atomicpi.signals.ISH_GPIO_7.global_idx # INPUT 4
+GPIO_7 = atomicpi.signals.ISH_GPIO_7.global_idx # INPUT 4
 GPIO.setup(GPIO_7, GPIO.OUT)
 
-INPUT_1=GPIO_2
-INPUT_2=GPIO_3
-INPUT_3=GPIO_4
-INPUT_4=GPIO_7
-ENABLE_A=GPIO_0
-ENABLE_B=GPIO_1
+INPUT_1 = GPIO_2
+INPUT_2 = GPIO_3
+INPUT_3 = GPIO_4
+INPUT_4 = GPIO_7
+ENABLE_A = GPIO_0
+ENABLE_B = GPIO_1
 
 # Some "Constants"
 _THRESHOLD = 0
@@ -145,11 +146,10 @@ def controller(lhs, rhs, deadzone_val=6000):
     else:
         straight()
 
-# Initialize video capture
+# Initialize video capture and playback
 VIDEO_CAPTURE = cv2.VideoCapture(0)
 VIDEO_CAPTURE.set(3, 800)
 VIDEO_CAPTURE.set(4, 600)
-
 cv2.namedWindow('FRAME')
 
 # Create trackbars for value editing
@@ -158,6 +158,7 @@ cv2.createTrackbar(SWITCH, 'FRAME', 0, 1, flip_thresh_type)
 cv2.createTrackbar('ROI', 'FRAME', 0, 450, change_roi)
 cv2.createTrackbar('deadzone', 'FRAME', 6000, 100000, change_deadzone)
 
+# Robot full speed ahead
 motor_a_fwd()
 motor_b_fwd()
 
