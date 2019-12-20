@@ -1,3 +1,10 @@
+****************************************************************
+Introduction To Robotics Final Projcet
+****************************************************************
+--------------------------------------------------------------
+Cameron Parette & Ben LeBrun
+--------------------------------------------------------------
+
 ********
 Abstract
 ********
@@ -13,14 +20,13 @@ Robot Design
 ----------
 Frame
 ----------
-Our frame consists of two primary components. The first component is a plastic frame re-purposed from an Elegoo Arduino Robot Car Kit V3.0 (no longer being sold, any chassis with room for 4 DC motors will do).
+Our frame consists of two primary components. The first component is a plastic frame re-purposed from an Arduino "car kit".
 This portion houses the four gear motors along with an L298n H-bridge for driving the motors.
 This portion of the frame can be seen below in Figure ####.
 
 The second part of the frame is a simple round baking sheet used to hold all digital components of the robot.
 We chose this for the frame due to its rigidity, durability, and low cost.
 Since the sheet is made of metal it will provide enough shielding between the noisy motors and the digital logic preventing interference.
-Figure #### below showes the
 
 We first test fitted the two sections of the frame together with tape, revealing that the upper portion would contact the wheels.
 To address this issue we placed a small piece of Masonite panel in between the two portions of the frame, giving the clearance needed for the the wheels.
@@ -61,7 +67,7 @@ Further testing revealed that the camera would power on and off without reason l
 
 To remedy this, we used an off the shelf USB webcam with a 720p 30 FPS sensor.
 We removed the shell of the camera in order to more easily attach it to the robot.
-It is important to note that nearly any USB based camera will be acceptable for this application. Increased resolution and framerates will lead to more processing overhead which could cause a performance decrease, in this application we are using internal OpenCV libraries to downsample the image at 800 by 600 pixels.
+It is important to note that nearly any USB based camera will be acceptable for this application. Increased resolution and framerates will lead to more processing overhead which could cause a performance decrease, in this application we are sampling the image at 800 by 600 pixels.
 
 Mounting the camera to the frame of the robot was accomplished using a large copper wire with a thick rubber insulation, glue and zip ties.
 The copper was flexible enough to allow us to position the camera as needed while being strong enough to not move when not intended.
@@ -130,12 +136,53 @@ We fashioned a small tank out of a 50 milliliter beverage bottle that includes a
 We tapped a small hole into the container and inserted 3/32 fuel line into it.
 We then ran this line to the fuel inlet on the Cox Sure Start.
 
-----------
+==============================
+Regulating The Output Voltage
+==============================
+Stable output voltage is required for predictable operation of the robot.
+In order to smooth the output of the DC generator we used a DC to DC buck converter.
+The converter allows us to adjust the output voltage of the system and set a current limit to protect anything we attach to it.
+These units are pre-manufactured and are of low cost making it ideal for this application.
+
+-----------
+Parts List
+-----------
+Below is a list of parts that are specific to this robot.
+Many of the components used could easily be replaced with something similar such as our baking sheet used in the frame.
+We have decided to only include the critical components in this list, anyone wishing to replicate this project should be able to find solutions to the remaining components using a little imagination.
+
+Critical Parts:
+
+- `Atomic Pi SBC kit with mini breakout board and camera as shown here <https://www.amazon.com/DLI-Atomic-Pi-Peripheral-Camera/dp/B07DVYDDV8/ref=sr_1_3?keywords=atomic+pi&qid=1576714701&sr=8-3>`_.
+- `Geared motors with wheels similar to these <https://www.amazon.com/Electric-Magnetic-Gearbox-Plastic-Yeeco/dp/B07DQGX369/ref=sr_1_5?keywords=geared+motor&qid=1576715104&sr=8-5>`_.
+- `L298N motor controller like similar to this <https://www.amazon.com/PChero-Controller-Module-Stepper-Arduino/dp/B07GTCWN9Z/ref=sr_1_18?keywords=l298n&qid=1576715419&sr=8-18>`_.
+- `USB battery pack similar to this one <https://www.amazon.com/Omars-10000mAh-Slimline-Portable-Compatible/dp/B07G26S5V8/ref=sr_1_6?keywords=battery+pack&qid=1576715552&sr=8-6>`_.
+- `Generic robot car frame like this one <https://www.amazon.com/wheel-layer-Chassis-Encoder-Arduino/dp/B06VTP8XBQ/ref=sr_1_7?keywords=arduino+car&qid=1576715694&sr=8-7>`_.
+  Note this one also includes motors and wheels.
+- A battery of roughly 9 volts to power the motors. A simple 9 volt battery will work or a more robust solution `like this <https://www.amazon.com/Tenergy-Capacity-Rechargeable-Standard-Connector/dp/B001BA292A/ref=sr_1_2?keywords=robot+car+battery&qid=1576716030&sr=8-2>`_. Will also work.
+
+DC Generator Parts:
+
+- Any DC motor capable of producing the required voltage will do such as `this one <https://www.amazon.com/RS-550s-18v-Electronic-Controlled-Replacement/dp/B00TE42PME/ref=sr_1_26?keywords=12+dc+motor&qid=1576716922&sr=8-26?>`_.
+- `A DC to DC voltage regulator such similar to this <https://www.amazon.com/gp/product/B011G0BNCG/ref=ppx_yo_dt_b_asin_title_o07_s00?ie=UTF8&psc=1>`_.
+- `Cox sure start nitro motor <https://www.ebay.com/itm/Surestart-Cox-049-model-airplane-engine-New/223476877248?epid=907509424&hash=item34084287c0:g:-pkAAOSwZW5aPUmP>`_.
+- `Fuel line <https://www.amazon.com/gp/product/B0006MZKJ8/ref=ppx_yo_dt_b_asin_title_o04_s00?ie=UTF8&psc=1>`_.
+- `Nitro fuel <https://www.amazon.com/gp/product/B00D253TAS/ref=ppx_yo_dt_b_asin_title_o06_s00?ie=UTF8&psc=1>`_.
+
+-----------------
+Assembly
+-----------------
+With the exception of the frame, all components were attached using high strength hot glue, or nuts and bolts.
+In order for the hot glue to stick to the frame we needed to sand off the non-stick material coating the baking sheet.
+After sanding and cleaning applying a liberal amount of glue results in a strong hold after a proper set time.
+Images of the fully assembled robot are shown below in Figure ####.
+
+**********
 Software
-----------
-================
+**********
+----------------
 Basic Algorithm
-================
+----------------
 In order to more easily comprehend the methods discussed in future sections, we will outline the basic algorithm used for navigation.
 No code or specific methods will be discussed in this section, and some details will be left intentionally vague to not cloud the concept with details.
 
@@ -166,5 +213,86 @@ Now that we have a basic understanding of the process we can dive into further d
 ==========================
 Python Path Following Code
 ==========================
+Below is the code we used to have the robot attempt to stay on its path using the method described in the section above.
 
 
+===============================
+GUI Tools For Tuning The Robot
+===============================
+We included a number of GUI based tools enabling the user to adjust certain parameters in real time while using the robot.
+While not needed for operation, these tools help with getting the desired performance out of the robot in various conditions.
+
+We have sliders for the following:
+
+- Threshold values - Threshold for binary threshold processing
+- Normal and Inverted - Switch between normal and inverted binary processing for different lighting/path conditions
+- Region of Interest - Set the top limit of the images to be processed, should be set as close to the horizon as possible
+- Deadzone - Tune to avoid "bouncing" or the robot excessively turning left or right
+
+===============================
+Image Processing considerations
+===============================
+In our code, as discussed above, we count the amount of white pixels that appear on screen from two halves of the same 
+image. Initially this was done using a raw feed from a 720p camera at 30fps. While the framerate has not become an issue 
+for either the speed of processing or saturating our ability to process, one should take careful consideration into the 
+size of the image you are processing. In our code we took the 960 x 544 sized frame and downscaled it to 800 x 600. This is 
+vital, as in our initial testing with whitespace counting, we encountered integer overflow very often especially in normal 
+operating conditions which severely skewed our results and even produced incorrect instructions for the motor control. 
+Therefore, for our method, one should consider using a downscaled sample of your camera's actual resolution. 
+
+One more consideration we encountered is our adjustable ROI frame, among other tweakable tools for image processing. In our project 
+we displayed the fully processed, greyscaled and binary thresholded image. To then display to the user where the region of 
+interest lies, we used OpenCV's line drawing tools to both show the centerline of the image to display where the slice was happening, and
+the horizontal cut where we were sampling only the bottom half of the image. To effectively show this back onto the processed image though, 
+one should be careful to make sure to convert the image back to color, as greyscale images in OpenCV discard all color information 
+even after processing which may leave helpful indication lines black and white if not properly returned to OpenCV's color space.
+
+----------------
+H Bridge control
+----------------
+For our L298n H-bridge, we are lucky to have a set of GPIO pins directly accessible to the Atomic Pi's operating system. 
+This allows us to simply program in the pin commands to our main script without having to run through serial communication, 
+networked communication, or other means of motor control communication. However, there are a few challenges that the Atomic Pi
+presents us with the GPIO interface.
+
+First, that the program will need to be run as super user (invoking sudo before python, use with care), as the Atomic Pi's GPIO pins are 
+only controllable by the root usergroup. No attempt was made to attempt to change or remove these permissions for the sake 
+of stability of the controller board. Second, the Atomic Pi unfortunately does not have any sort of PWM or adjustable voltage 
+output. This would normally allow us to change the speed of the motors and allowing more sophisticated movement. While not a 
+project ending setback, requires us to consider the limitations of the current design as a whole. One proposal we might add 
+to improve this project would be to use something like a 74HC595 shit register and timing to emulate PWM to the motors.
+
+Therefore, our code was a simple on/off statement with the motors only set to forward. During our initialization of the robot
+we immediately set the H bridge to turn the wheels forward, and with our turning functions we simply turn one set of wheels off
+or the other. For our purpose of following a hallway or a sidewalk, this worked fine, but could be improved for more complicated 
+path following in the future.
+
+------------------------------
+Optional: Spotify integration
+------------------------------
+As a morale boosting endeavor and in the famous words of George Leigh Mallory who probably did not have as easy access to python 
+libraries for spotify control and integration as we did; we integrated Spotify "Because it is there"; the robot with an attached 
+speaker can also activate music during its line following duties.
+
+We chose Spotify for two reasons, one is that it runs on a separate program and the libraries simply make network calls to 
+command Spotify, not to be decoding or playing music while vital computer vision processing is occuring. The other is to 
+avoid any legal issues with including music in projects. Therefore, this section does require the developer to have a paid
+Spotify premium subscription.
+
+`The library can be found here <https://github.com/plamere/spotipy>`_ and must be installed with pip using 
+:code:`pip install git+https://github.com/plamere/spotipy`. For simplicity, we used a yaml file and the pyyaml package to 
+read in the Client ID and Client Secret which can be `generated from Spotify's developer dashboard <https://developer.spotify.com/>`_.
+Under no circumstance should you reveal this Client ID or Client Secret token to either an open git repo or otherwise and avoid hard coding 
+the tokens in. For this project, we generated a makefile that given the proper parameters will generate this file, and the .gitignore 
+will ignore any references to this generated file, preventing it from being added or committed to a repo.
+
+Finally, feeding Spotipy the correct user credentials and a URI to a playlist of songs prepared by the developer, the robot 
+will make a request to Spotify to play on any open web or phone player the selected playlist. Ideally, on a player set up on 
+the Atomic Pi.
+
+Note one issue is that where the program may need to run once without root access for the GPIO pins, as neither Chrome or Firefox 
+will run as a root user for security reasons; but is necessary to login to Spotify to activate Spotipy. Simply put the block of code 
+for Spotipy in your initialization stages, follow the prompted instructions to login to Spotify, and let the program give you the 
+13 Access Denied error for the GPIO pins once. After that, no web browser should need to be opened and the program should be safe to 
+run as root user for access to the GPIO pins. A cache file will be generated in your working directory with a token for the program to 
+return to. Make sure this also does not get committed to a git repo for security reasons.
