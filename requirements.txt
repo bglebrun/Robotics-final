@@ -19,7 +19,7 @@ matplotlib==2.1.1
 mercurial==4.5.3
 numpy==1.16.5
 olefile==0.45.1
-opencv-contrib-python==4.1.2.30
+opencv-contrib-python==4.2.0.32
 Pillow==6.2.0
 PyBluez==0.18
 pycairo==1.16.2
