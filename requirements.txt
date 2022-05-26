@@ -40,6 +40,6 @@ spidev==3.4
 spotipy==2.4.4
 subprocess32==3.2.7
 sysfs-gpio==0.2.2
-Twisted==19.7.0
+Twisted==22.4.0
 urllib3==1.25.7
 zope.interface==4.6.0
