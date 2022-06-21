@@ -17,7 +17,7 @@ keyrings.alt==3.0
 lightblue==0.3.2
 matplotlib==2.1.1
 mercurial==4.5.3
-numpy==1.16.5
+numpy==1.22.0
 olefile==0.45.1
 opencv-contrib-python==4.1.2.30
 Pillow==6.2.0
