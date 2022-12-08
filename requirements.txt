@@ -3,7 +3,7 @@ Adafruit-GPIO==1.0.3
 Adafruit-PureIO==0.2.3
 asn1crypto==0.24.0
 backports.functools-lru-cache==1.4
-certifi==2019.11.28
+certifi==2022.12.7
 chardet==3.0.4
 cryptography==2.3
 cycler==0.10.0
