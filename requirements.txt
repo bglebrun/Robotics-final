@@ -37,7 +37,7 @@ scipy==0.19.1
 SecretStorage==2.3.1
 six==1.13.0
 spidev==3.4
-spotipy==2.4.4
+spotipy==2.22.1
 subprocess32==3.2.7
 sysfs-gpio==0.2.2
 Twisted==19.7.0
